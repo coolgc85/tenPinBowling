@@ -72,7 +72,7 @@ public class Frame {
         isLast = last;
     }
 
-    public Boolean getFinalFrame() {
+    public Boolean isFinalFrame() {
         return isFinalFrame;
     }
 

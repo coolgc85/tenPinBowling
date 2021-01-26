@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class FileScoreReader {
+public class FileScoreReader{
+
+    public static final int MINIMUM_NORMAL_ROWS = 10;
 
     public List<RollLine> readFile(String fileName) throws BowlingException {//TODO: validate input
         List<RollLine> inputList = null;

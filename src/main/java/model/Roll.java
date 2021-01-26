@@ -6,6 +6,7 @@ public class Roll {
     private Integer firstRoll;
     private Integer secondRoll;
     private Integer extraRoll;
+    private Boolean foulFlag;
 
     public Roll(Integer firstRoll, Integer secondRoll) {
         this.firstRoll = firstRoll;
@@ -16,6 +17,7 @@ public class Roll {
 
     }
 
+
     public Integer getFirstRoll() {
         return firstRoll;
     }
@@ -25,8 +27,11 @@ public class Roll {
     }
 
     public void setFirstRoll(String firstRoll) {
-        if(firstRoll == "F")
+        if(firstRoll == "F") {
             this.setFirstRoll(0);
+            foulFlag = Boolean.TRUE;
+        }
+        this.setFirstRoll(Integer.parseInt(firstRoll));
     }
 
     public Integer getSecondRoll() {
@@ -43,5 +48,13 @@ public class Roll {
 
     public void setExtraRoll(Integer extraRoll) {
         this.extraRoll = extraRoll;
+    }
+
+    public Boolean getFoulFlag() {
+        return foulFlag;
+    }
+
+    public void setFoulFlag(Boolean foulFlag) {
+        this.foulFlag = foulFlag;
     }
 }
