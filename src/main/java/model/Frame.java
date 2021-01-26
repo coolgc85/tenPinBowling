@@ -2,22 +2,15 @@ package model;
 
 public class Frame {
 
+    public static final Integer LAST_FRAME = 10;
     private Integer frameNumber;
     private Roll roll;
-    private boolean isSpare;
-    private boolean isStrike;
-    private boolean bonusRoll;
+    private Boolean isSpare;
+    private Boolean isStrike;
+    private Boolean bonusRoll;
     private Integer score;
-    private Integer tmpScore;
-
-    public Frame(Integer frameNumber, Roll roll, boolean isSpare, boolean isStrike, boolean bonusRoll, Integer score) {
-        this.frameNumber = frameNumber;
-        this.roll = roll;
-        this.isSpare = isSpare;
-        this.isStrike = isStrike;
-        this.bonusRoll = bonusRoll;
-        this.score = score;
-    }
+    private Boolean isLast;
+    private Boolean isFinalFrame;
 
     public Frame() {
 
@@ -43,7 +36,7 @@ public class Frame {
         return isSpare;
     }
 
-    public void setSpare(boolean spare) {
+    public void setSpare(Boolean spare) {
         this.isSpare = spare;
     }
 
@@ -51,15 +44,15 @@ public class Frame {
         return isStrike;
     }
 
-    public void setStrike(boolean strike) {
+    public void setStrike(Boolean strike) {
         this.isStrike = strike;
     }
 
-    public boolean isBonusRoll() {
+    public Boolean isBonusRoll() {
         return bonusRoll;
     }
 
-    public void setBonusRoll(boolean bonusRoll) {
+    public void setBonusRoll(Boolean bonusRoll) {
         this.bonusRoll = bonusRoll;
     }
 
@@ -71,18 +64,19 @@ public class Frame {
         this.score = score;
     }
 
-    public Integer getTmpScore() {
-        return score;
+    public Boolean getLast() {
+        return isLast;
     }
 
-    public void setTmpScore(Integer tmpScore) {
-        this.tmpScore = tmpScore;
+    public void setLast(Boolean last) {
+        isLast = last;
     }
 
+    public Boolean getFinalFrame() {
+        return isFinalFrame;
+    }
 
-
-
-
-
-
+    public void setFinalFrame(Boolean finalFrame) {
+        isFinalFrame = finalFrame;
+    }
 }

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class FileScoreReader {
 
-    public List<RollLine> readFile(String fileName) throws BowlingException {
+    public List<RollLine> readFile(String fileName) throws BowlingException {//TODO: validate input
         List<RollLine> inputList = null;
         try{
             File inputFile = new File(fileName);

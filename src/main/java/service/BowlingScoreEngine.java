@@ -2,30 +2,37 @@ package service;
 
 import exception.BowlingException;
 import model.Frame;
-import model.Game;
 import model.Roll;
 import model.RollLine;
 import util.FileScoreReader;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 
 public class BowlingScoreEngine {
+    int MAX_NUM_FRAMES = 10;
+    ConcurrentSkipListMap<Integer,Frame> frameMap = new ConcurrentSkipListMap <Integer,Frame>();
+    Integer frameNumber = null;
+    Frame frame = null;
 
-    public void processScore(){
-        int NUM_FRAMES = 10;
+    private Frame getFrameInstance(){
+        if(frame == null){
+            frame = new Frame();
+        }
+        return frame;
+    }
+
+    public void processScoreGame(){
 
         FileScoreReader fr = new FileScoreReader();
         try {
-            List<RollLine> rollLines = fr.readFile("Sample.txt");
+            List<RollLine> rollLines = fr.readFile("Sample.txt"); //TODO: check for a interface
+
+            //Group file entries by player
             Map<String,List<RollLine>> rollLinesByPlayer = rollLines.stream().collect(Collectors.groupingBy(RollLine::getPlayerName));
-           // rollLinesByPlayer.entrySet().stream().map(roll -> calculateScore(roll.getValue())).collect(Collectors.toList());
-            //this.calculateScore(rollLinesByPlayer);
-            //this.printScore();
+
+            
 
 
         } catch (BowlingException e) {
@@ -33,52 +40,87 @@ public class BowlingScoreEngine {
         }
     }
 
+    public Integer calculateSpare(Frame currentFrame){
+        return Roll.MAX_PIN_NUMBER + frameMap.get(currentFrame.getFrameNumber()+1).getRoll().getFirstRoll();
+    }
 
-    public Game caculateGameScore(List<RollLine> rollLinesByPlayer) {
-        Frame frame = new Frame();
-        Roll rollItem = null;
-        Integer frameNumber = 1;
-        Integer tmpScore = 0;
-        HashMap<Integer, Frame> frameList = new HashMap<Integer, Frame>();
-        Frame previousFrame = null;
+    public Integer calculateStrike(Frame currentFrame){
+        int score = Roll.MAX_PIN_NUMBER;
+        Frame nextFrame = null;
+        int nextIndex = 0;
 
-        for (RollLine rollLineItem : rollLinesByPlayer) {
+        if(currentFrame.isBonusRoll()){
+            Roll rollTmp = currentFrame.getRoll();
+            return rollTmp.getFirstRoll() + rollTmp.getSecondRoll() + rollTmp.getExtraRoll();
+        }
 
-            if (frameNumber >= 1) {
-                previousFrame = frameList.get(frameNumber - 1);
+        while(!(nextIndex <= 2)){
+            nextIndex++;
+            nextFrame = frameMap.get(currentFrame.getFrameNumber()+nextIndex);
+
+            if (nextFrame.isStrike()){
+                score = score + Roll.MAX_PIN_NUMBER;
             }
-
-
-            if (rollItem.getFirstRoll() == null) {
-                frame = new Frame();
-                frame.setFrameNumber(frameNumber);
-                rollItem = new Roll();
-                rollItem.setFirstRoll(Integer.valueOf(rollLineItem.getPinsKnocked()));
-
-                if (previousFrame.isSpare()) {//TODO: check for optional
-                    previousFrame.setScore(previousFrame.getScore() + rollItem.getFirstRoll());
-                }
-
-                frame.setStrike(rollItem.getFirstRoll() == 10);
-                if (frame.isStrike()) {
-                    frame.setScore(rollItem.getFirstRoll());
-                }
-            } else {
-                rollItem.setSecondRoll(Integer.valueOf(rollLineItem.getPinsKnocked()));
-                frame.setSpare((rollItem.getFirstRoll() + rollItem.getSecondRoll()) == 10);
-                frame.setScore(rollItem.getFirstRoll() + rollItem.getSecondRoll());
-
-                if (previousFrame.isStrike()) {
-                    previousFrame.setScore(previousFrame.getScore() + frame.getScore());
-                    frame.setScore(frame.getScore() + previousFrame.getScore());
-                }
-                frameNumber++;
-                rollItem = null;
+            else if(nextIndex < 2){
+                score = nextFrame.getRoll().getFirstRoll() + nextFrame.getRoll().getSecondRoll();
+                nextIndex++;
             }
-            frameList.put(frameNumber, frame);
+            else
+                score = nextFrame.getRoll().getFirstRoll();
 
         }
-        return null;
+    return score;
+    }
+
+
+    private void calculateScore(){
+
+        for (Map.Entry<Integer, Frame> entryFrame : frameMap.entrySet()) {
+            Frame frameTmp = entryFrame.getValue();
+
+                if(frameTmp.isStrike()){
+                    frameTmp.setBonusRoll(frame.getFrameNumber() == Frame.LAST_FRAME);
+                    frameTmp.setScore(calculateStrike(frameTmp));
+                }
+                else if(frameTmp.isSpare()){
+                    frameTmp.setScore(calculateSpare(frameTmp));
+                }
+                else{
+                    frameTmp.setScore(frameTmp.getRoll().getFirstRoll() + frameTmp.getRoll().getSecondRoll());
+                }
+            frameMap.replace(frameTmp.getFrameNumber(),frameTmp);
+        }
+    }
+
+
+    private Frame setFrameValues(RollLine line){
+
+        if(frameMap.isEmpty())
+            frameNumber = 1;
+
+        frame = getFrameInstance();
+        Roll roll = frame.getRoll();
+
+        if (frame.getFrameNumber() == null) {
+            frame.setFrameNumber(frameNumber++);
+        }
+
+        if(roll.getFirstRoll() == null){
+            roll.setFirstRoll(Integer.valueOf(line.getPinsKnocked()));
+            frame.setStrike(roll.getFirstRoll() == Roll.MAX_PIN_NUMBER);
+
+            if(frame.isStrike()){
+                frame.setBonusRoll(frame.getFrameNumber() == Frame.LAST_FRAME);
+                return frame;
+            }
+        } else if(roll.getSecondRoll() == null){
+            roll.setSecondRoll(Integer.valueOf(line.getPinsKnocked()));
+            frame.setSpare(roll.getFirstRoll()+roll.getSecondRoll()==Roll.MAX_PIN_NUMBER);
+        } else{
+            roll.setExtraRoll(Integer.valueOf(line.getPinsKnocked()));
+            frame.setRoll(roll);
+        }
+        return frame;
 
     }
 

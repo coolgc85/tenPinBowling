@@ -2,8 +2,10 @@ package model;
 
 public class Roll {
 
+    public static final Integer MAX_PIN_NUMBER = 10;
     private Integer firstRoll;
     private Integer secondRoll;
+    private Integer extraRoll;
 
     public Roll(Integer firstRoll, Integer secondRoll) {
         this.firstRoll = firstRoll;
@@ -22,6 +24,11 @@ public class Roll {
         this.firstRoll = firstRoll;
     }
 
+    public void setFirstRoll(String firstRoll) {
+        if(firstRoll == "F")
+            this.setFirstRoll(0);
+    }
+
     public Integer getSecondRoll() {
         return secondRoll;
     }
@@ -30,4 +37,11 @@ public class Roll {
         this.secondRoll = secondRoll;
     }
 
+    public Integer getExtraRoll() {
+        return extraRoll;
+    }
+
+    public void setExtraRoll(Integer extraRoll) {
+        this.extraRoll = extraRoll;
+    }
 }
