@@ -14,7 +14,7 @@ public class Roll {
     }
 
     public Roll() {
-
+        this.foulFlag = Boolean.FALSE;
     }
 
 
@@ -27,11 +27,13 @@ public class Roll {
     }
 
     public void setFirstRoll(String firstRoll) {
-        if(firstRoll == "F") {
+        if(firstRoll.equals("F")) {
             this.setFirstRoll(0);
             foulFlag = Boolean.TRUE;
+        } else{
+            this.setFirstRoll(Integer.parseInt(firstRoll));
         }
-        this.setFirstRoll(Integer.parseInt(firstRoll));
+
     }
 
     public Integer getSecondRoll() {

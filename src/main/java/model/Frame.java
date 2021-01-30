@@ -13,7 +13,11 @@ public class Frame {
     private Boolean isFinalFrame;
 
     public Frame() {
-
+        this.isSpare = Boolean.FALSE;
+        this.isStrike = Boolean.FALSE;
+        this.bonusRoll = Boolean.FALSE;
+        this.isLast = Boolean.FALSE;
+        this.isFinalFrame = Boolean.FALSE;
     }
 
     public Integer getFrameNumber() {
