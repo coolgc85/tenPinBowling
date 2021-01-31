@@ -17,7 +17,8 @@ class BowlingScoreEngineTest {
     @Test
     void processStandardGame() {
         BowlingScoreEngine engine = new BowlingScoreEngine();
-        assertTrue(engine.processScoreGame("OnePlayer.txt") < 300 );
+        Integer matchResult = engine.processScoreGame("TwoPlayers.txt");
+        assertTrue(matchResult < 300 );
     }
 
 
@@ -26,7 +27,7 @@ class BowlingScoreEngineTest {
     void processPerfectGame() {
         BowlingScoreEngine engine = new BowlingScoreEngine();
         engine.processScoreGame("PerfectMatchSinglePlayer.txt");
-        assertSame(PERFECT_SCORE,engine.processScoreGame("PerfectMatchSinglePlayer.txt"));
+        assertEquals(PERFECT_SCORE,engine.processScoreGame("PerfectMatchSinglePlayer.txt"));
     }
 
      /*

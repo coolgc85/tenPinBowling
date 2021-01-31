@@ -88,36 +88,33 @@ public class BowlingScoreEngine {
     private Integer getScoreNextTwoThrows(Frame currentFrame){
         int score = 0;
         int index = 1;
-        Frame nextFrame = frameMap.get(currentFrame.getFrameNumber() + index);
+        Frame nextFrame = null;
 
-        while(nextFrame != null && index <= 2){
-            if(nextFrame.isStrike()){
-                if(nextFrame.isFinalFrame()) {
-                    score = getFrameStandardScore(nextFrame, nextFrame.isStrike());
-                    break;
-                }
-                else
-                    score += Roll.MAX_PIN_NUMBER;
-            }
-            else{
-                score = getFrameStandardScore(nextFrame);
-                break;
-            }
-            index++;
+        while (index <=2){
             nextFrame = frameMap.get(currentFrame.getFrameNumber() + index);
+            if(index == 1 && nextFrame.isFinalFrame()) {
+                score += getFrameStandardScore(nextFrame);
+            }else
+                score += getFrameStandardScore(nextFrame, nextFrame.isStrike());
+            if(nextFrame.isStrike() && !nextFrame.isFinalFrame())
+                index++;
+            else
+                break;
         }
+
+
         return score;
     }
 
     private Integer calculateStrike(Frame currentFrame) {
-        Integer score = Roll.MAX_PIN_NUMBER;
+        Integer score = 0;
 
         if (currentFrame.getFrameNumber() > 1) {
             score = score + frameMap.get(currentFrame.getFrameNumber() - 1).getScore();
         }
 
         if(!currentFrame.isFinalFrame())
-            score += getScoreNextTwoThrows(currentFrame);
+            score += getScoreNextTwoThrows(currentFrame) + Roll.MAX_PIN_NUMBER;
         else{
             score += getFrameStandardScore(currentFrame);;
             if(currentFrame.isBonusRoll()){
@@ -140,7 +137,7 @@ public class BowlingScoreEngine {
                     frameTmp.setScore(calculateSpare(frameTmp));
                 }
                 else{
-                    frameTmp.setScore(frameTmp.getRoll().getFirstRoll() + frameTmp.getRoll().getSecondRoll());
+                    frameTmp.setScore(getFrameStandardScore(frameTmp));
                 }
             frameMap.replace(frameTmp.getFrameNumber(),frameTmp);
         }
