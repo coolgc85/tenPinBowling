@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 public class BowlingScoreEngine {
 
 
-    private ConcurrentSkipListMap<Integer,Frame> frameMap = null;
-    private Integer frameNumber = null;
-    private Frame frame = null;
+    private ConcurrentSkipListMap<Integer,Frame> frameMap;
+    private Integer frameNumber;
+    private Frame frame;
 
 
     private Frame getFrameInstance(){
@@ -68,31 +68,63 @@ public class BowlingScoreEngine {
                 Optional.ofNullable(currentRoll.getExtraRoll()).orElse(0);
     }
 
-    private Integer calculateStrike(Frame currentFrame){
-        int score = Roll.MAX_PIN_NUMBER;
-        Frame nextFrame = null;
-        int nextIndex = 0;
+    private Frame getNextFrame(Frame currentFrame){
+        if(!currentFrame.isFinalFrame() )
+            return frameMap.get(currentFrame.getFrameNumber() + 1);
+        return null;
+    }
 
-        if(Boolean.TRUE.equals(currentFrame.isBonusRoll())){
-            Roll rollTmp = currentFrame.getRoll();
-            return calculateBonusRoll(rollTmp);
+    private Integer getFrameStandardScore(Frame frame){
+        return getFrameStandardScore(frame, false);
+    }
+
+    private Integer getFrameStandardScore(Frame frame, boolean strikeValidation){
+        if(strikeValidation)
+            return Roll.MAX_PIN_NUMBER;
+        else
+            return Optional.ofNullable(frame.getRoll().getFirstRoll()).orElse(0) + Optional.ofNullable(frame.getRoll().getSecondRoll()).orElse(0);
+    }
+
+    private Integer getScoreNextTwoThrows(Frame currentFrame){
+        int score = 0;
+        int index = 1;
+        Frame nextFrame = frameMap.get(currentFrame.getFrameNumber() + index);
+
+        while(nextFrame != null && index <= 2){
+            if(nextFrame.isStrike()){
+                if(nextFrame.isFinalFrame()) {
+                    score = getFrameStandardScore(nextFrame, nextFrame.isStrike());
+                    break;
+                }
+                else
+                    score += Roll.MAX_PIN_NUMBER;
+            }
+            else{
+                score = getFrameStandardScore(nextFrame);
+                break;
+            }
+            index++;
+            nextFrame = frameMap.get(currentFrame.getFrameNumber() + index);
+        }
+        return score;
+    }
+
+    private Integer calculateStrike(Frame currentFrame) {
+        Integer score = Roll.MAX_PIN_NUMBER;
+
+        if (currentFrame.getFrameNumber() > 1) {
+            score = score + frameMap.get(currentFrame.getFrameNumber() - 1).getScore();
         }
 
-        while((2 > nextIndex)){//TODO: check for improvement
-            nextIndex++;
-            nextFrame = frameMap.get(currentFrame.getFrameNumber()+nextIndex);
-
-            if (nextFrame.isStrike()){
-                score = score + Roll.MAX_PIN_NUMBER;
+        if(!currentFrame.isFinalFrame())
+            score += getScoreNextTwoThrows(currentFrame);
+        else{
+            score += getFrameStandardScore(currentFrame);;
+            if(currentFrame.isBonusRoll()){
+               score+=currentFrame.getRoll().getExtraRoll();
             }
-            else if(nextIndex < 2){
-                score = nextFrame.getRoll().getFirstRoll() + nextFrame.getRoll().getSecondRoll();
-                nextIndex++;
-            }
-            else
-                score = nextFrame.getRoll().getFirstRoll();
         }
-    return score;
+        return score;
     }
 
 
@@ -102,7 +134,6 @@ public class BowlingScoreEngine {
             Frame frameTmp = entryFrame.getValue();
 
                 if(frameTmp.isStrike()){
-                    frameTmp.setBonusRoll(frameTmp.getFrameNumber().equals(Frame.LAST_FRAME));
                     frameTmp.setScore(calculateStrike(frameTmp));
                 }
                 else if(frameTmp.isSpare()){
@@ -123,7 +154,7 @@ public class BowlingScoreEngine {
             frameNumber = 1;
 
         frame = getFrameInstance();
-        Optional<Roll> optionalRoll = Optional.ofNullable(frame.getRoll());
+        Optional<Roll> optionalRoll = Optional.ofNullable(frame.getRoll());//TODO: check for improvement
         Roll roll = optionalRoll.orElse(new Roll());
 
         if (frame.getFrameNumber() == null) {
@@ -136,8 +167,10 @@ public class BowlingScoreEngine {
             frame.setStrike(roll.getFirstRoll().equals(Roll.MAX_PIN_NUMBER));
             frame.setRoll(roll);
 
-            if (frame.isStrike()) {
-                frame.setBonusRoll(frame.isFinalFrame());
+            if (frame.isStrike() && frame.isFinalFrame()) {
+                frame.setBonusRoll(Boolean.TRUE);
+                frameMap.put(frame.getFrameNumber(), frame);
+            } else{
                 frameMap.put(frame.getFrameNumber(), frame);
                 frame = null;
             }
@@ -149,7 +182,7 @@ public class BowlingScoreEngine {
                 frame = null;
             } else {
                 roll.setSecondRoll(Integer.valueOf(line.getPinsKnocked()));
-                frame.setStrike(roll.getSecondRoll().equals(Roll.MAX_PIN_NUMBER));
+                frameMap.put(frame.getFrameNumber(), frame);
             }
         } else {
             roll.setExtraRoll(Integer.valueOf(line.getPinsKnocked()));

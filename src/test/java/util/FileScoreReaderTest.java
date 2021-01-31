@@ -16,7 +16,7 @@ class FileScoreReaderTest {
     @Test
     void readStandardFile() throws BowlingException {
         FileScoreReader fr = new FileScoreReader();
-        fileName = "sample2.txt";
+        fileName = "TwoPlayers.txt";
         List<RollLine> rolLineList = fr.readFile(fileName);
         assertTrue(!rolLineList.isEmpty() && rolLineList.size() > FileScoreReader.MINIMUM_NORMAL_ROWS);
     }

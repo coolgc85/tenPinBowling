@@ -8,11 +8,6 @@ public class Roll {
     private Integer extraRoll;
     private Boolean foulFlag;
 
-    public Roll(Integer firstRoll, Integer secondRoll) {
-        this.firstRoll = firstRoll;
-        this.secondRoll = secondRoll;
-    }
-
     public Roll() {
         this.foulFlag = Boolean.FALSE;
     }

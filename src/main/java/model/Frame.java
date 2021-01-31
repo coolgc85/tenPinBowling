@@ -9,15 +9,12 @@ public class Frame {
     private Boolean isStrike;
     private Boolean bonusRoll;
     private Integer score;
-    private Boolean isLast;
-    private Boolean isFinalFrame;
+    private boolean isFinalFrame;
 
     public Frame() {
         this.isSpare = Boolean.FALSE;
         this.isStrike = Boolean.FALSE;
         this.bonusRoll = Boolean.FALSE;
-        this.isLast = Boolean.FALSE;
-        this.isFinalFrame = Boolean.FALSE;
     }
 
     public Integer getFrameNumber() {
@@ -68,19 +65,11 @@ public class Frame {
         this.score = score;
     }
 
-    public Boolean getLast() {
-        return isLast;
-    }
-
-    public void setLast(Boolean last) {
-        isLast = last;
-    }
-
-    public Boolean isFinalFrame() {
+    public boolean isFinalFrame() {
         return isFinalFrame;
     }
 
-    public void setFinalFrame(Boolean finalFrame) {
+    public void setFinalFrame(boolean finalFrame) {
         isFinalFrame = finalFrame;
     }
 }

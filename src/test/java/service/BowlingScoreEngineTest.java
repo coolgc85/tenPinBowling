@@ -3,8 +3,12 @@ package service;
 import model.Frame;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 
 import static org.junit.jupiter.api.Assertions.*;
+
+
 
 class BowlingScoreEngineTest {
 
@@ -13,26 +17,33 @@ class BowlingScoreEngineTest {
     @Test
     void processStandardGame() {
         BowlingScoreEngine engine = new BowlingScoreEngine();
-        engine.processScoreGame("sample.txt");
-        assertTrue(!engine.frameMap.isEmpty());
+        assertTrue(engine.processScoreGame("OnePlayer.txt") < 300 );
     }
+
+
 
     @Test
     void processPerfectGame() {
         BowlingScoreEngine engine = new BowlingScoreEngine();
-        engine.processScoreGame("perfect.txt");
-        assertTrue(engine.frameMap.get(Frame.LAST_FRAME).getScore() == PERFECT_SCORE);
-
+        engine.processScoreGame("PerfectMatchSinglePlayer.txt");
+        assertSame(PERFECT_SCORE,engine.processScoreGame("PerfectMatchSinglePlayer.txt"));
     }
 
+     /*
+    @Test
+ void invalidScoreMoreFrames() {
+
+
+    }*/
+
    /* @Test
-    void completeFrames() {
+    void invalidScoreCheatBonus() {
 
 
     }*/
 
     /* @Test
-    void failGame() {
+    void incompleteGame() {
 
 
     }*/
