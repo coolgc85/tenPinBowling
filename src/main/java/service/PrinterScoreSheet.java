@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 public class PrinterScoreSheet {
 
     private StringBuilder builder;
-    private boolean flagLabelPlayerPinfall;
+    private boolean flagPinfall;
     private boolean flagScore;
     private String playerName;
 
@@ -27,18 +27,21 @@ public class PrinterScoreSheet {
     }
 
     public void printPinFalls(Frame frame){
-        builder.append("\t");
+        if(!flagPinfall){
+            builder.append("Pinfalls");
+            flagPinfall = true;
+        }
 
+        builder.append("\t");
         if(frame.isStrike()){
             builder.append("\tX");
         }else if(frame.isSpare()){
-            builder.append("\t");
             builder.append(frame.getRoll().getFirstRoll());
             builder.append("\t/");
         }else{
             builder.append(frame.getRoll().getFirstRoll());
             builder.append("\t");
-            builder.append(frame.getRoll().getSecondRoll());
+            builder.append(frame.getRoll().getSecondRoll()==null?"":frame.getRoll().getSecondRoll());
         }
     }
 
@@ -60,5 +63,9 @@ public class PrinterScoreSheet {
 
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
+    }
+
+    public String gePlayerName() {
+        return playerName;
     }
 }

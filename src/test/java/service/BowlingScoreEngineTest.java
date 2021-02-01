@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -17,8 +19,8 @@ class BowlingScoreEngineTest {
     @Test
     void processStandardGame() {
         BowlingScoreEngine engine = new BowlingScoreEngine();
-        Integer matchResult = engine.processScoreGame("TwoPlayers.txt");
-        assertTrue(matchResult < 300 );
+        HashMap<String,Integer> response = engine.processScoreGame("TwoPlayers.txt");
+        assertTrue(response.size() >= 1);
     }
 
 
@@ -26,26 +28,7 @@ class BowlingScoreEngineTest {
     @Test
     void processPerfectGame() {
         BowlingScoreEngine engine = new BowlingScoreEngine();
-        engine.processScoreGame("PerfectMatchSinglePlayer.txt");
-        assertEquals(PERFECT_SCORE,engine.processScoreGame("PerfectMatchSinglePlayer.txt"));
+        assertEquals(PERFECT_SCORE,engine.processScoreGame("PerfectMatchSinglePlayer.txt").entrySet().iterator().next().getValue());
     }
 
-     /*
-    @Test
- void invalidScoreMoreFrames() {
-
-
-    }*/
-
-   /* @Test
-    void invalidScoreCheatBonus() {
-
-
-    }*/
-
-    /* @Test
-    void incompleteGame() {
-
-
-    }*/
 }

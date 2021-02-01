@@ -18,6 +18,7 @@ public class BowlingScoreEngine {
     private Frame frame;
 
     private PrinterScoreSheet buffer;
+    private PrinterScoreSheet bufferPin;
 
     public BowlingScoreEngine(){
         buffer = new PrinterScoreSheet();
@@ -33,8 +34,9 @@ public class BowlingScoreEngine {
     /**
      * @param fileName score lines filename
      */
-    public Integer processScoreGame(String fileName){
+    public HashMap<String,Integer> processScoreGame(String fileName){
 
+        HashMap<String,Integer> result = new HashMap<String,Integer>();
         FileScoreReader fr = new FileScoreReader();
         try {
             List<RollLine> rollLines = fr.readFile(fileName); //TODO: check for a interface
@@ -43,9 +45,14 @@ public class BowlingScoreEngine {
             Map<String,List<RollLine>> rollLinesByPlayer = rollLines.stream().collect(Collectors.groupingBy(RollLine::getPlayerName));
 
             for (Map.Entry<String, List<RollLine>> rollLineEntry : rollLinesByPlayer.entrySet()) {
+                String playerName = rollLineEntry.getValue().get(0).getPlayerName();
                 frameMap = new ConcurrentSkipListMap<>();
                 buffer = new PrinterScoreSheet();
-                buffer.setPlayerName(rollLineEntry.getValue().get(0).getPlayerName());
+                bufferPin = new PrinterScoreSheet();
+                if(buffer.gePlayerName() == null) {
+                    buffer.setPlayerName(playerName);
+                    result.put(playerName,null);
+                }
                 buffer.printFrameNumbers();
                 for (RollLine rollLineItem:rollLineEntry.getValue()) {
                     this.setFrameValues(rollLineItem);
@@ -53,13 +60,15 @@ public class BowlingScoreEngine {
                 }
                 this.getCalculatedScore();
                 System.out.println(buffer.getBuilder().toString());
-               // System.out.println(frameMap.lastEntry().getValue().getScore());
+                System.out.println(bufferPin.getBuilder().toString());
+
+                result.put(playerName,frameMap.lastEntry().getValue().getScore());
             }
 
         } catch (BowlingException e) {
             e.printStackTrace();
         }
-        return frameMap.lastEntry().getValue().getScore(); //TODO:  change for method
+        return result;
     }
 
     /**
@@ -138,6 +147,7 @@ public class BowlingScoreEngine {
             } else {
                 frameTmp.setScore(getFrameStandardScore(frameTmp) + previousScore);
             }
+            bufferPin.printPinFalls(frameTmp);
             buffer.printScore(frameTmp);
             frameMap.replace(frameTmp.getFrameNumber(), frameTmp);
 
@@ -152,12 +162,11 @@ public class BowlingScoreEngine {
             frameNumber = 1;
 
         frame = getFrameInstance();
-        Optional<Roll> optionalRoll = Optional.ofNullable(frame.getRoll());//TODO: check for improvement
+        Optional<Roll> optionalRoll = Optional.ofNullable(frame.getRoll());
         Roll roll = optionalRoll.orElse(new Roll());
 
         if (frame.getFrameNumber() == null) {
             frame.setFrameNumber(frameNumber++);
-            //frame.setFinalFrame(frame.getFrameNumber().equals(Frame.LAST_FRAME));
         }
 
         if (roll.getFirstRoll() == null) {
