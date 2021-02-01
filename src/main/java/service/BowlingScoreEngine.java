@@ -8,6 +8,7 @@ import util.FileScoreReader;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class BowlingScoreEngine {
@@ -19,6 +20,7 @@ public class BowlingScoreEngine {
 
     private PrinterScoreSheet buffer;
     private PrinterScoreSheet bufferPin;
+
 
     public BowlingScoreEngine(){
         buffer = new PrinterScoreSheet();
@@ -34,9 +36,10 @@ public class BowlingScoreEngine {
     /**
      * @param fileName score lines filename
      */
-    public HashMap<String,Integer> processScoreGame(String fileName){
+    public Map<String,Integer> processScoreGame(String fileName){
 
-        HashMap<String,Integer> result = new HashMap<String,Integer>();
+
+        HashMap<String,Integer> result = new HashMap<>();
         FileScoreReader fr = new FileScoreReader();
         try {
             List<RollLine> rollLines = fr.readFile(fileName); //TODO: check for a interface

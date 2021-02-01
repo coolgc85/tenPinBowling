@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,7 +20,7 @@ class BowlingScoreEngineTest {
     @Test
     void processStandardGame() {
         BowlingScoreEngine engine = new BowlingScoreEngine();
-        HashMap<String,Integer> response = engine.processScoreGame("TwoPlayers.txt");
+        Map<String,Integer> response = engine.processScoreGame("TwoPlayers.txt");
         assertTrue(response.size() >= 1);
     }
 
