@@ -11,9 +11,20 @@ Use maven
 mvn clean package -DskipTests=true
 ```
 
+## Resources
+
+Example resources, as a perfect game file are placed in the root directory
+
+```bash
+PerfectMatchSinglePlayer.txt
+TwoPlayers.txt
+```
+
 ## Usage
 
 ```bash
 cd ./target
 java -jar TenPinBowling-1.0-SNAPSHOT.jar <<FILE_PATH>>
+java -jar TenPinBowling-1.0-SNAPSHOT.jar TwoPlayers.txt
+java -jar TenPinBowling-1.0-SNAPSHOT.jar /home/user/TwoPlayers.txt
 ```
