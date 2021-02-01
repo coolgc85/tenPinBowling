@@ -1,8 +1,9 @@
 # Ten Pin Bowling
 
-Foobar is a Python library for dealing with word pluralization.
+Java coding challenge, the main objective is process a file with the lines that represents
+every throw by multiple players and after that get the final score and print a score sheet representation
 
-## Installation
+## Packaging
 
 Use maven
 
@@ -14,4 +15,5 @@ mvn clean package -DskipTests=true
 
 ```bash
 cd ./target
-java -jar TenPinBowling-1.0-SNAPSHOT.jar file.txt
+java -jar TenPinBowling-1.0-SNAPSHOT.jar <<FILE_PATH>>
+```
