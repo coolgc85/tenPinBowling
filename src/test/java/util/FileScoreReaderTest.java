@@ -25,7 +25,7 @@ class FileScoreReaderTest {
     @Test
     void readNotEmptyFile() throws BowlingException {
         FileScoreReader fr = new FileScoreReader();
-        fileName = "sample1.txt";
+        fileName = "TwoPlayers.txt";
         assertTrue(!fr.readFile(fileName).isEmpty());
     }
 

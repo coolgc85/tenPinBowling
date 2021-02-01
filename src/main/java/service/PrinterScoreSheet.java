@@ -1,6 +1,7 @@
 package service;
 
 import model.Frame;
+import model.Roll;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,16 +33,21 @@ public class PrinterScoreSheet {
             flagPinfall = true;
         }
 
+        Roll roll = frame.getRoll();
+
         builder.append("\t");
         if(frame.isStrike()){
             builder.append("\tX");
         }else if(frame.isSpare()){
-            builder.append(frame.getRoll().getFirstRoll());
+            if(roll.getFoulFlag())
+                builder.append("F");
+            else
+                builder.append(roll.getFirstRoll());
             builder.append("\t/");
         }else{
-            builder.append(frame.getRoll().getFirstRoll());
+            builder.append(roll.getFoulFlag() && roll.getFirstRoll()==0?"F":roll.getFirstRoll());
             builder.append("\t");
-            builder.append(frame.getRoll().getSecondRoll()==null?"":frame.getRoll().getSecondRoll());
+            builder.append(roll.getFoulFlag() && roll.getSecondRoll()==0?"F":roll.getSecondRoll());
         }
     }
 

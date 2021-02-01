@@ -183,7 +183,7 @@ public class BowlingScoreEngine {
                 frameMap.put(frame.getFrameNumber(), frame);
             }
         } else if (roll.getSecondRoll() == null) {
-            roll.setSecondRoll(Integer.valueOf(line.getPinsKnocked()));
+            roll.setSecondRoll(line.getPinsKnocked());
             if (!frame.isBonusRoll()) {
                 frame.setSpare(roll.getFirstRoll() + roll.getSecondRoll() == Roll.MAX_PIN_NUMBER);
                 frameMap.put(frame.getFrameNumber(), frame);

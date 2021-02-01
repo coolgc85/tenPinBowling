@@ -21,13 +21,8 @@ public class FileScoreReader{
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             inputList = br.lines().map(mapToRollLine).collect(Collectors.toList());
             br.close();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            throw new BowlingException("Error reading the file");
-        }
-        catch (Exception e) {
-            System.err.println(e.getMessage());
-            throw new BowlingException("Error reading the file");
+        } catch (Exception e) {
+            throw new BowlingException(e.getMessage());
         }
         return inputList;
     }

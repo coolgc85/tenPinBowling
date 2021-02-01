@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>com.challenge</groupId>
     <artifactId>TenPinBowling</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -16,13 +16,6 @@
     </properties>
 
     <dependencies>
-      <!--  <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.7.7</version>
-            <scope>test</scope>
-        </dependency>
--->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -40,6 +33,11 @@
             <artifactId>javax.inject</artifactId>
             <version>1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.0</version>
+        </dependency>
 
     </dependencies>
     <build>
@@ -51,6 +49,18 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>main.Main</mainClass>
+                    </manifest>
+                </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>
