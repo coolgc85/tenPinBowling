@@ -44,6 +44,7 @@ public class BowlingScoreEngine {
                     //TODO: print score card
                 }
                 this.getCalculatedScore();
+                System.out.println(frameMap.lastEntry().getValue().getScore());
             }
 
         } catch (BowlingException e) {
@@ -60,18 +61,6 @@ public class BowlingScoreEngine {
      */
     private Integer calculateSpare(Frame currentFrame){
         return Roll.MAX_PIN_NUMBER + frameMap.get(currentFrame.getFrameNumber()+1).getRoll().getFirstRoll();
-    }
-
-    private Integer calculateBonusRoll(Roll currentRoll) {
-
-        return currentRoll.getFirstRoll() + Optional.ofNullable(currentRoll.getSecondRoll()).orElse(0) +
-                Optional.ofNullable(currentRoll.getExtraRoll()).orElse(0);
-    }
-
-    private Frame getNextFrame(Frame currentFrame){
-        if(!currentFrame.isFinalFrame() )
-            return frameMap.get(currentFrame.getFrameNumber() + 1);
-        return null;
     }
 
     private Integer getFrameStandardScore(Frame frame){
@@ -116,7 +105,7 @@ public class BowlingScoreEngine {
         if(!currentFrame.isFinalFrame())
             score += getScoreNextTwoThrows(currentFrame) + Roll.MAX_PIN_NUMBER;
         else{
-            score += getFrameStandardScore(currentFrame);;
+            score += getFrameStandardScore(currentFrame);
             if(currentFrame.isBonusRoll()){
                score+=currentFrame.getRoll().getExtraRoll();
             }
@@ -126,18 +115,21 @@ public class BowlingScoreEngine {
 
 
     private void getCalculatedScore(){
-
+        int previousScore = 0;
         for (Map.Entry<Integer, Frame> entryFrame : frameMap.entrySet()) {
             Frame frameTmp = entryFrame.getValue();
+
+            if(frameTmp.getFrameNumber() > 1)
+                previousScore = frameMap.get(frameTmp.getFrameNumber()-1).getScore();
 
                 if(frameTmp.isStrike()){
                     frameTmp.setScore(calculateStrike(frameTmp));
                 }
                 else if(frameTmp.isSpare()){
-                    frameTmp.setScore(calculateSpare(frameTmp));
+                    frameTmp.setScore(calculateSpare(frameTmp)+previousScore);
                 }
                 else{
-                    frameTmp.setScore(getFrameStandardScore(frameTmp));
+                    frameTmp.setScore(getFrameStandardScore(frameTmp)+previousScore);
                 }
             frameMap.replace(frameTmp.getFrameNumber(),frameTmp);
         }
@@ -156,7 +148,7 @@ public class BowlingScoreEngine {
 
         if (frame.getFrameNumber() == null) {
             frame.setFrameNumber(frameNumber++);
-            frame.setFinalFrame(frame.getFrameNumber().equals(Frame.LAST_FRAME));
+            //frame.setFinalFrame(frame.getFrameNumber().equals(Frame.LAST_FRAME));
         }
 
         if (roll.getFirstRoll() == null) {
@@ -164,21 +156,21 @@ public class BowlingScoreEngine {
             frame.setStrike(roll.getFirstRoll().equals(Roll.MAX_PIN_NUMBER));
             frame.setRoll(roll);
 
-            if (frame.isStrike() && frame.isFinalFrame()) {
-                frame.setBonusRoll(Boolean.TRUE);
+            if (frame.isStrike()) {
+                frame.setBonusRoll(frame.isFinalFrame());
                 frameMap.put(frame.getFrameNumber(), frame);
+                if(!frame.isFinalFrame())
+                    frame = null;
             } else{
                 frameMap.put(frame.getFrameNumber(), frame);
-                frame = null;
             }
         } else if (roll.getSecondRoll() == null) {
-            if (!frame.isBonusRoll().booleanValue()) {
-                roll.setSecondRoll(Integer.valueOf(line.getPinsKnocked()));
+            roll.setSecondRoll(Integer.valueOf(line.getPinsKnocked()));
+            if (!frame.isBonusRoll()) {
                 frame.setSpare(roll.getFirstRoll() + roll.getSecondRoll() == Roll.MAX_PIN_NUMBER);
                 frameMap.put(frame.getFrameNumber(), frame);
                 frame = null;
             } else {
-                roll.setSecondRoll(Integer.valueOf(line.getPinsKnocked()));
                 frameMap.put(frame.getFrameNumber(), frame);
             }
         } else {
@@ -187,7 +179,6 @@ public class BowlingScoreEngine {
             frameMap.put(frame.getFrameNumber(), frame);
             frame = null;
         }
-
 
     }
 
