@@ -17,6 +17,11 @@ public class BowlingScoreEngine {
     private Integer frameNumber;
     private Frame frame;
 
+    private PrinterScoreSheet buffer;
+
+    public BowlingScoreEngine(){
+        buffer = new PrinterScoreSheet();
+    }
 
     private Frame getFrameInstance(){
         if(frame == null){
@@ -39,12 +44,16 @@ public class BowlingScoreEngine {
 
             for (Map.Entry<String, List<RollLine>> rollLineEntry : rollLinesByPlayer.entrySet()) {
                 frameMap = new ConcurrentSkipListMap<>();
+                buffer = new PrinterScoreSheet();
+                buffer.setPlayerName(rollLineEntry.getValue().get(0).getPlayerName());
+                buffer.printFrameNumbers();
                 for (RollLine rollLineItem:rollLineEntry.getValue()) {
                     this.setFrameValues(rollLineItem);
                     //TODO: print score card
                 }
                 this.getCalculatedScore();
-                System.out.println(frameMap.lastEntry().getValue().getScore());
+                System.out.println(buffer.getBuilder().toString());
+               // System.out.println(frameMap.lastEntry().getValue().getScore());
             }
 
         } catch (BowlingException e) {
@@ -114,24 +123,24 @@ public class BowlingScoreEngine {
     }
 
 
-    private void getCalculatedScore(){
+    private void getCalculatedScore() {
         int previousScore = 0;
         for (Map.Entry<Integer, Frame> entryFrame : frameMap.entrySet()) {
             Frame frameTmp = entryFrame.getValue();
 
-            if(frameTmp.getFrameNumber() > 1)
-                previousScore = frameMap.get(frameTmp.getFrameNumber()-1).getScore();
+            if (frameTmp.getFrameNumber() > 1)
+                previousScore = frameMap.get(frameTmp.getFrameNumber() - 1).getScore();
 
-                if(frameTmp.isStrike()){
-                    frameTmp.setScore(calculateStrike(frameTmp));
-                }
-                else if(frameTmp.isSpare()){
-                    frameTmp.setScore(calculateSpare(frameTmp)+previousScore);
-                }
-                else{
-                    frameTmp.setScore(getFrameStandardScore(frameTmp)+previousScore);
-                }
-            frameMap.replace(frameTmp.getFrameNumber(),frameTmp);
+            if (frameTmp.isStrike()) {
+                frameTmp.setScore(calculateStrike(frameTmp));
+            } else if (frameTmp.isSpare()) {
+                frameTmp.setScore(calculateSpare(frameTmp) + previousScore);
+            } else {
+                frameTmp.setScore(getFrameStandardScore(frameTmp) + previousScore);
+            }
+            buffer.printScore(frameTmp);
+            frameMap.replace(frameTmp.getFrameNumber(), frameTmp);
+
         }
 
     }

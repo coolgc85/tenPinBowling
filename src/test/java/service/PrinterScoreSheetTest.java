@@ -7,8 +7,6 @@ import org.junit.jupiter.api.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PrinterScoreSheetTest {
@@ -37,8 +35,7 @@ class PrinterScoreSheetTest {
     @Test
     @Order(1)
     void doPrint() {
-        p.getBuilder().append("Frame\t\t");
-        p.doPringFrameNumbers();
+        p.printFrameNumbers();
         System.out.println(p.getBuilder().toString());
     }
 
@@ -47,10 +44,9 @@ class PrinterScoreSheetTest {
     @Order(2)
     void doPrintPinFalls() {
         PrinterScoreSheet p = new PrinterScoreSheet();
-        p.getBuilder().append("Player\n");
-        p.getBuilder().append("PinFalls");
+
         for (Frame frameTmp: frames) {
-            p.doPrintPinFalls(frameTmp);
+            p.printPinFalls(frameTmp);
 
         }
         System.out.println(p.getBuilder().toString());
@@ -60,9 +56,9 @@ class PrinterScoreSheetTest {
     @Order(3)
     void doPrintScore() {
         PrinterScoreSheet p = new PrinterScoreSheet();
-        p.getBuilder().append("Score");
+
         for (Frame frameTmp: frames) {
-            p.doPrintScore(frameTmp);
+            p.printScore(frameTmp);
 
         }
         System.out.println(p.getBuilder().toString());
