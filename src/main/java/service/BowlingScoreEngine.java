@@ -33,7 +33,7 @@ public class BowlingScoreEngine {
         return frame;
     }
 
-    /**
+    /** Process a file withe the game lines ir order to get a result
      * @param fileName score lines filename
      */
     public Map<String,Integer> processScoreGame(String fileName){
@@ -116,6 +116,11 @@ public class BowlingScoreEngine {
         return score;
     }
 
+    /**
+     * Specific method that calcules the score for the current frame in considering the strike rule
+     * @param currentFrame
+     * @return calculate score
+     */
     private Integer calculateStrike(Frame currentFrame) {
         Integer score = 0;
 
@@ -134,7 +139,9 @@ public class BowlingScoreEngine {
         return score;
     }
 
-
+    /**
+     * Process all frames and assign the score to each one, updating the map of frams
+     */
     private void getCalculatedScore() {
         int previousScore = 0;
         for (Map.Entry<Integer, Frame> entryFrame : frameMap.entrySet()) {
@@ -158,7 +165,10 @@ public class BowlingScoreEngine {
 
     }
 
-
+    /**
+     * Set all values for each throw in all frames
+     * @param line roll line read from score file
+     */
     private void setFrameValues(RollLine line) {
 
         if (frameMap.isEmpty())
